@@ -1,4 +1,4 @@
-from extract_data import VotingDataReader
+from voting_data_reader import VotingDataReader
 from ballots import Ballot
 
 
@@ -23,4 +23,4 @@ if __name__ == "__main__":
                 candidateRankings = candidateRankings.split(",")
                 ballots.append(Ballot(int(numVoters), list(candidateRankings)))
 
-    VotingDataReader(candidateLabels, ballots)
+    votingDataReader = VotingDataReader(candidateLabels, ballots)
