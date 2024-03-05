@@ -1,5 +1,6 @@
 from voting_data_reader import VotingDataReader
 from ballots import Ballot
+from stv_voting import STV_voting
 
 
 if __name__ == "__main__":
@@ -21,6 +22,9 @@ if __name__ == "__main__":
                     continue
                 numVoters, candidateRankings = line.split(":")
                 candidateRankings = candidateRankings.split(",")
+                candidateRankings = [ranking.strip() for ranking in candidateRankings]
                 ballots.append(Ballot(int(numVoters), list(candidateRankings)))
 
     votingDataReader = VotingDataReader(candidateLabels, ballots)
+    stv_voting = STV_voting(candidateLabels, ballots)
+    winner = stv_voting.run_election()
