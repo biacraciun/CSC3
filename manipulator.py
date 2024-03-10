@@ -1,16 +1,22 @@
 from stv_voting import STV_voting
 from ballots import Ballot
 import copy
+import time
 
 class Manipulator:
 
     def __init__(self, labels, ballots):
+        start = time.time()
         self.originalBallots = ballots
         self.originalLabels = labels
         stv_voting = STV_voting(self.originalLabels, self.deepCopyBallots(self.originalBallots))
         self.originalVoteDistribution = stv_voting.count_first_preferences()
         self.originalVoteDistribution = dict(sorted(self.originalVoteDistribution.items(), key=lambda item: item[1]))
+        startVote = time.time()
         self.originalWinner = stv_voting.run_election(False)[0] 
+        endVote = time.time()
+        print("Ran election in", (endVote - startVote), " seconds.")
+
         print(self.originalLabels)
         print(self.originalWinner)
         print(len(self.originalBallots))
@@ -24,6 +30,8 @@ class Manipulator:
         manipulatedWinners = []
         minManipulatorsCount = 10000000000000
         minManipulators = []
+
+        
 
         for candidate in self.originalLabels.keys():
             if candidate == self.originalWinner:
@@ -44,10 +52,16 @@ class Manipulator:
             #print(winners)
             #if winner != self.originalWinner:
             #    manipulatedWinners.append([candidate, winner])
+        end = time.time()
         print(manipulatedWinners)
         print(minManipulatorsCount, minManipulators)
+
+        
+
+        print("Found a solution in", (end - start), " seconds.")
+
         for minManipulator in minManipulators:
-            self._run_specific_manipulated_election(self.originalBallots, minManipulator[1] + 1, self.possibleManipulators[minManipulator[0]], minManipulator[0], False)
+            self._run_specific_manipulated_election(self.originalBallots, minManipulator[1], self.possibleManipulators[minManipulator[0]], minManipulator[0], False)
         #manipulators = self.possibleManipulators['3']
         #preferredManipulators = [manipulator for manipulator in manipulators if (type(manipulator.candidateRankings[0]) == list and not '3' in manipulator.candidateRankings[0]) or (type(manipulator.candidateRankings[0]) != list and not '3' == manipulator.candidateRankings[0]) ]
         #possibleManipulators = [manipulator for manipulator in manipulators if not (type(manipulator.candidateRankings[0]) == list and not '3' in manipulator.candidateRankings[0]) or (type(manipulator.candidateRankings[0]) != list and not '3' == manipulator.candidateRankings[0])]
@@ -64,11 +78,11 @@ class Manipulator:
         #manipulationCount = totalNumManipulators + 1
 
         #for manCount in range(totalNumManipulators + 1):
-        #    winners = self._run_specific_manipulated_election(self.originalBallots, manCount, preferredManipulators, possibleManipulators)
+        #    winners = self._run_specific_manipulated_election(self.originalBallots, manCount, manipulators, alternateWinner)
         #    if alternateWinner in winners:
         #        manipulationCount = manCount
         #        break
-        manipulationCount = self._rec_find_lowest_manipulators(alternateWinner, 0, totalNumManipulators + 2, self.originalBallots, manipulators)
+        manipulationCount = self._rec_find_lowest_manipulators(alternateWinner, 0, totalNumManipulators + 1, self.originalBallots, manipulators) + 1
         if manipulationCount > totalNumManipulators:
             return 10000000
         return manipulationCount
